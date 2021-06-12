@@ -1,10 +1,5 @@
 package me.madcabbage.mpwebsocketserver;
 
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
@@ -91,7 +86,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     break;
 
                 case "join":
-                    Lobby.addPlayer(String game, String roomCode, new Player(conn, username));
+                    //Lobby.addPlayer(String game, String roomCode, new Player(conn, username));
                     break;
 
                 case "start":
@@ -129,8 +124,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             System.out.println("Starting Multiplayer WebSocketServer on '" + addr.getHostName() + ":" + addr.getPort() + "'");
             System.out.println(); // For spacing
         }
-
-
 
     }
 
