@@ -27,6 +27,16 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
         this.lobby = new Lobby();
     }
 
+    public void SendError(WebSocket conn, String msg) {
+        JSONObject response = new JSONObject();
+        //Make it look like below, should be fine.
+        response.put("request", "error");
+        response.put("message", msg);
+        conn.send(response.toJSONString());
+    }
+
+
+
     public static void main(String[] args) {
         WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
         server.run();
@@ -81,7 +91,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             switch (reqType.toLowerCase()) {
                 case "create":
                     // Create a new room, give it the creator, send back the roomcode
-                    var asdfad = "Myn133e4";
+                    // var asdfad = "Myn133e4";
                     String code = lobby.createRoom(game);
                     request.put("roomcode", code);
                     conn.send(request.toJSONString());
@@ -90,22 +100,22 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                 case "join":
                     String username = (String) request.get("username");
-                    if (username == null)  {
-                        JSONObject response = new JSONObject();
-                        //xxxc CRW Put in the error response in client so it pops up in the console in game,  will help with
-                        //testing stuff.
-                        //Make it look like below, should be fine.
-                        response.put("request", "error");
-                        response.put("message", "Send the username");
-//todo
-                        //response.put("roomcode", roomCode);
-                        //response.put("player", lobby.getPlayerCount(game, roomCode));
-                        conn.send(response.toJSONString());
+                    if (username == null) {
+                        SendError(conn,"No usernane in message, send the username next time");
 
-
+                        break;
                     }
                     String roomCode = (String) request.get("roomcode");
+                    if (roomCode == null) {
+                        SendError(conn,"No roomcode in message, send the username next time");
+                        break;
+                    }
+
                     boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    if (!success) {
+                        SendError(conn,"Something else is wrong... Add player failed.");
+                        break;
+                    }
                     JSONObject response = new JSONObject();
                     response.put("request", "joined");
                     response.put("game", game);
