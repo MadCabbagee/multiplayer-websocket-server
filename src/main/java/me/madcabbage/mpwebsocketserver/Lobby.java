@@ -39,7 +39,7 @@ public class Lobby {
         StringBuilder code = new StringBuilder();
         Random rnd = new Random();
 
-        int length = 6;
+        int length = 4;
 
         for (int i = 0; i < length; i++) {
             // append a random character from dictionary to the code string
@@ -51,5 +51,15 @@ public class Lobby {
 
     public static Map<String, Map<String, Room>> getLobbies() {
         return lobbies;
+    }
+
+    public static boolean addPlayer(String game, String roomCode, Player player) {
+
+        if (lobbies.containsKey(game)) {
+            Map<String, Room> gameRooms = lobbies.get(game);
+            gameRooms.get(roomCode).join(player);
+        }
+
+        return false;
     }
 }
