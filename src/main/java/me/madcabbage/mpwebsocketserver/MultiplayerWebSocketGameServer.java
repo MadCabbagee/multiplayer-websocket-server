@@ -1,22 +1,19 @@
 package me.madcabbage.mpwebsocketserver;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
+    private static final JSONParser parser = new JSONParser();
     public final boolean debugEnabled;
-
-    private static final JSONParser parser = new JSONParser();;
+    ;
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address) {
         super(address);
@@ -26,7 +23,12 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address, boolean debug) {
         super(address);
-        this.debugEnabled = debug;;
+        this.debugEnabled = debug;
+    }
+
+    public static void main(String[] args) {
+        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
+        server.run();
     }
 
     @Override
@@ -39,8 +41,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
         }
 
         // check if person connecting is apart of an existing game then reconnect them - on the other hand make sure player data is not kept when another round is started
-
-
 
     }
 
@@ -83,20 +83,32 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     String code = Lobby.createRoom(game);
                     request.put("roomcode", code);
                     conn.send(request.toJSONString());
+                    System.out.println(request.toJSONString());
                     break;
 
                 case "join":
-                    //Lobby.addPlayer(String game, String roomCode, new Player(conn, username));
+                    String username = (String) request.get("username");
+                    String roomCode = (String) request.get("roomcode");
+                    boolean success = Lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    JSONObject response = new JSONObject();
+                    response.put("request", "joined");
+                    response.put("game", game);
+                    response.put("roomcode", roomCode);
+                    response.put("player", Lobby.getRoom(game, roomCode).getPlayerCount());
+                    response.put("success", success);
+                    conn.send(response.toJSONString());
                     break;
 
                 case "start":
-
+                    // Broadcast to all players that the game is starting.
                     break;
 
                 case "end":
+                    // disconnect all players from the room and remove from the list
                     break;
 
                 case "relay":
+                    // broadcast to all players but the sender.
                     break;
 
             }
@@ -125,11 +137,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             System.out.println(); // For spacing
         }
 
-    }
-
-    public static void main(String[] args) {
-        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
-        server.run();
     }
 
     public boolean isDebugEnabled() {
