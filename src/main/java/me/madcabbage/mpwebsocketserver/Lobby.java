@@ -12,9 +12,11 @@ public class Lobby {
 
         if (lobbies.containsKey(game)) {
             Map<String, Room> gameRoom = lobbies.get(game);
+
             if (! gameRoom.containsKey(code)) {
                 Room newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
+
             } else {
                 while (gameRoom.containsKey(code)) {
                     code = generateCode();
@@ -22,6 +24,7 @@ public class Lobby {
                 Room newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
             }
+
         } else {
             Map<String, Room> gameRooms = new HashMap<>();
             Room newRoom = new Room(code);
@@ -58,8 +61,12 @@ public class Lobby {
         if (lobbies.containsKey(game)) {
             Map<String, Room> gameRooms = lobbies.get(game);
             gameRooms.get(roomCode).join(player);
-        }
+            return true;
 
-        return false;
+        } else return false;
+    }
+
+    public static Room getRoom(String game, String roomCode) {
+        return lobbies.get(game).get(roomCode);
     }
 }
