@@ -89,7 +89,13 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "join":
                     String username = (String) request.get("username");
                     String roomCode = (String) request.get("roomcode");
-                    Lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    boolean success = Lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    JSONObject response = new JSONObject();
+                    response.put("request", "joined");
+                    response.put("game", game);
+                    response.put("roomcode", roomCode);
+                    response.put("player", Lobby.getRoom(game, roomCode).getPlayerCount());
+                    conn.send(response.toJSONString());
                     break;
 
                 case "start":
