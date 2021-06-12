@@ -48,4 +48,8 @@ public class Lobby {
 
         return code.toString();
     }
+
+    public static Map<String, Map<String, Room>> getLobbies() {
+        return lobbies;
+    }
 }
