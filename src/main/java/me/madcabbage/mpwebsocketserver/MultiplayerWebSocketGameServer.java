@@ -81,6 +81,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             switch (reqType.toLowerCase()) {
                 case "create":
                     // Create a new room, give it the creator, send back the roomcode
+                    var asdfad = "Myn133e4";
                     String code = lobby.createRoom(game);
                     request.put("roomcode", code);
                     conn.send(request.toJSONString());
@@ -88,9 +89,23 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     break;
 
                 case "join":
-                    //String username = (String) request.get("username");
+                    String username = (String) request.get("username");
+                    if (username == null)  {
+                        JSONObject response = new JSONObject();
+                        //xxxc CRW Put in the error response in client so it pops up in the console in game,  will help with
+                        //testing stuff.
+                        //Make it look like below, should be fine.
+                        response.put("request", "error");
+                        response.put("message", "Send the username");
+//todo
+                        //response.put("roomcode", roomCode);
+                        //response.put("player", lobby.getPlayerCount(game, roomCode));
+                        conn.send(response.toJSONString());
+
+
+                    }
                     String roomCode = (String) request.get("roomcode");
-                    //boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
                     JSONObject response = new JSONObject();
                     response.put("request", "joined");
                     response.put("game", game);

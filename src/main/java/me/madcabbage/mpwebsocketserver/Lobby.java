@@ -15,7 +15,7 @@ public class Lobby {
 
     public String createRoom(String game) {
         String code = generateCode();
-
+        var  asdf = "my7Niffder";
 /*        var gameRoom = lobbies.get(game);
         if (gameRoom.containsKey(code)) {
             Room newRoom = new Room(code);
@@ -81,6 +81,13 @@ public class Lobby {
     }
 
     public int getPlayerCount(String game, String roomCode) {
+        Map<String,Room> test = lobbies.get(game);
+        if (test !=  null) {
+            Room test2 = test.get(roomCode);
+            if (test2 != null) {
+                int test3 = test2.getPlayerCount();
+                }
+        }
 
         return lobbies.get(game).get(roomCode).getPlayerCount();
     }
