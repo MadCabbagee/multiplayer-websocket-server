@@ -50,7 +50,7 @@ public class TestClient extends WebSocketClient {
         ex.printStackTrace();
     }
 
-    public static void main(String[] args) {
+    public static void cmain(String[] args) {
         try (Scanner cin = new Scanner(System.in)) {
 
             CommandLine cmdLine = parseArgs(args);
@@ -76,13 +76,13 @@ public class TestClient extends WebSocketClient {
     }
 
     private static CommandLine parseArgs(String[] args) {
-        var options = new Options();
+        Options options = new Options();
 
-        var host = new Option("h", "host", true, "Define the host to connect to.");
+        Option host = new Option("h", "host", true, "Define the host to connect to.");
         host.setRequired(true);
         options.addOption(host);
 
-        var port = new Option("p", "port", true, "Define the target port for the defined host.");
+        Option port = new Option("p", "port", true, "Define the target port for the defined host.");
         port.setRequired(true);
         options.addOption(port);
 
@@ -94,7 +94,7 @@ public class TestClient extends WebSocketClient {
         } catch (ParseException e) {
             System.out.println(e.getMessage());
 
-            var formatter = new HelpFormatter();
+            HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Test WebSocket Client", options);
 
             System.exit(1);
