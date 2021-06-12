@@ -5,29 +5,47 @@ import java.util.*;
 public class Lobby {
     // Code
 //    private Map<String, Room> rooms;
-    private static final Map<String, Map<String, Room>> lobbies = new HashMap<>(); // todo refactor to dictionary hashtable
+    //private static final Dictionary<String, Map<String, Room>> lobbies = new Hashtable<>();
+    private static final Map<String, Map<String, Room>> lobbies = new HashMap<>();
+    private static final Random rnd = new Random();
 
-    public static String createRoom(String game) {
-        String code = generateCode();
+    public Lobby() {
+
+    }
+
+    public String createRoom(String game) {
+        var code = generateCode();
+
+/*        var gameRoom = lobbies.get(game);
+        if (gameRoom.containsKey(code)) {
+            Room newRoom = new Room(code);
+            gameRoom.put(code, newRoom);
+        } else {
+            while (gameRoom.containsKey(code)) {
+                code = generateCode();
+            }
+            Room newRoom = new Room(code);
+            gameRoom.put(code, newRoom);
+        }*/
 
         if (lobbies.containsKey(game)) {
             Map<String, Room> gameRoom = lobbies.get(game);
 
             if (! gameRoom.containsKey(code)) {
-                Room newRoom = new Room(code);
+                var newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
 
             } else {
                 while (gameRoom.containsKey(code)) {
                     code = generateCode();
                 }
-                Room newRoom = new Room(code);
+                var newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
             }
 
         } else {
             Map<String, Room> gameRooms = new HashMap<>();
-            Room newRoom = new Room(code);
+            var newRoom = new Room(code);
             gameRooms.put(code, newRoom);
             lobbies.put("game", gameRooms);
         }
@@ -35,16 +53,13 @@ public class Lobby {
         return code;
     }
 
-    public static String generateCode() {
+    public String generateCode() {
         // generate a 6 character/digit room code
-        final String dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        final var dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        final var code = new StringBuilder();
+        var length = 4;
 
-        StringBuilder code = new StringBuilder();
-        Random rnd = new Random();
-
-        int length = 4;
-
-        for (int i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
             // append a random character from dictionary to the code string
             code.append(dict.charAt(rnd.nextInt(dict.length())));
         }
@@ -56,17 +71,17 @@ public class Lobby {
         return lobbies;
     }
 
-    public static boolean addPlayer(String game, String roomCode, Player player) {
-
-        if (lobbies.containsKey(game)) {
-            Map<String, Room> gameRooms = lobbies.get(game);
-            gameRooms.get(roomCode).join(player);
+    public boolean addPlayer(String game, String roomCode, Player player) {
+        var room = lobbies.get(game).get(roomCode);
+        if (room != null) {
+            room.join(player);
             return true;
 
         } else return false;
     }
 
-    public static Room getRoom(String game, String roomCode) {
-        return lobbies.get(game).get(roomCode);
+    public int getPlayerCount(String game, String roomCode) {
+
+        return lobbies.get(game).get(roomCode).getPlayerCount();
     }
 }
