@@ -1,22 +1,19 @@
 package me.madcabbage.mpwebsocketserver;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
+    private static final JSONParser parser = new JSONParser();
     public final boolean debugEnabled;
-
-    private static final JSONParser parser = new JSONParser();;
+    ;
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address) {
         super(address);
@@ -27,6 +24,11 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     public MultiplayerWebSocketGameServer(InetSocketAddress address, boolean debug) {
         super(address);
         this.debugEnabled = debug;
+    }
+
+    public static void main(String[] args) {
+        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
+        server.run();
     }
 
     @Override
@@ -91,13 +93,15 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     break;
 
                 case "start":
-
+                    // Broadcast to all players that the game is starting.
                     break;
 
                 case "end":
+                    // disconnect all players from the room and remove from the list
                     break;
 
                 case "relay":
+                    // broadcast to all players but the sender.
                     break;
 
             }
@@ -126,11 +130,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             System.out.println(); // For spacing
         }
 
-    }
-
-    public static void main(String[] args) {
-        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
-        server.run();
     }
 
     public boolean isDebugEnabled() {
