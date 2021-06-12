@@ -26,7 +26,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address, boolean debug) {
         super(address);
-        this.debugEnabled = debug;;
+        this.debugEnabled = debug;
     }
 
     @Override
@@ -39,8 +39,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
         }
 
         // check if person connecting is apart of an existing game then reconnect them - on the other hand make sure player data is not kept when another round is started
-
-
 
     }
 
@@ -83,10 +81,13 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     String code = Lobby.createRoom(game);
                     request.put("roomcode", code);
                     conn.send(request.toJSONString());
+                    System.out.println(request.toJSONString());
                     break;
 
                 case "join":
-                    //Lobby.addPlayer(String game, String roomCode, new Player(conn, username));
+                    String username = (String) request.get("username");
+                    String roomCode = (String) request.get("roomcode");
+                    Lobby.addPlayer(game, roomCode, new Player(conn, username));
                     break;
 
                 case "start":
