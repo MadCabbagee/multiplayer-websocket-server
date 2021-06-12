@@ -14,7 +14,7 @@ public class Lobby {
     }
 
     public String createRoom(String game) {
-        var code = generateCode();
+        String code = generateCode();
 
 /*        var gameRoom = lobbies.get(game);
         if (gameRoom.containsKey(code)) {
@@ -32,20 +32,20 @@ public class Lobby {
             Map<String, Room> gameRoom = lobbies.get(game);
 
             if (! gameRoom.containsKey(code)) {
-                var newRoom = new Room(code);
+                Room newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
 
             } else {
                 while (gameRoom.containsKey(code)) {
                     code = generateCode();
                 }
-                var newRoom = new Room(code);
+                Room newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
             }
 
         } else {
             Map<String, Room> gameRooms = new HashMap<>();
-            var newRoom = new Room(code);
+            Room newRoom = new Room(code);
             gameRooms.put(code, newRoom);
             lobbies.put("game", gameRooms);
         }
@@ -55,11 +55,11 @@ public class Lobby {
 
     public String generateCode() {
         // generate a 6 character/digit room code
-        final var dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        final var code = new StringBuilder();
-        var length = 4;
+        final String dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        final StringBuilder code = new StringBuilder();
+        final int length = 4;
 
-        for (var i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             // append a random character from dictionary to the code string
             code.append(dict.charAt(rnd.nextInt(dict.length())));
         }
@@ -72,7 +72,7 @@ public class Lobby {
     }
 
     public boolean addPlayer(String game, String roomCode, Player player) {
-        var room = lobbies.get(game).get(roomCode);
+        Room room = lobbies.get(game).get(roomCode);
         if (room != null) {
             room.join(player);
             return true;
