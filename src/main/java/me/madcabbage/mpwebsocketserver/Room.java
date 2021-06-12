@@ -30,7 +30,7 @@ public class Room {
         return players;
     }
 
-    public int getPlayerCount() {
+    public synchronized int getPlayerCount() {
         return playerCount;
     }
 }
