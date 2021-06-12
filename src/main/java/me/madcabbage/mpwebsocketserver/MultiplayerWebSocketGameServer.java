@@ -13,17 +13,18 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     private static final JSONParser parser = new JSONParser();
     public final boolean debugEnabled;
-    ;
+    private final Lobby lobby;
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address) {
         super(address);
         this.debugEnabled = false;
-
+        this.lobby = new Lobby();
     }
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address, boolean debug) {
         super(address);
         this.debugEnabled = debug;
+        this.lobby = new Lobby();
     }
 
     public static void main(String[] args) {
@@ -80,22 +81,22 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             switch (reqType.toLowerCase()) {
                 case "create":
                     // Create a new room, give it the creator, send back the roomcode
-                    String code = Lobby.createRoom(game);
+                    String code = lobby.createRoom(game);
                     request.put("roomcode", code);
                     conn.send(request.toJSONString());
                     System.out.println(request.toJSONString());
                     break;
 
                 case "join":
-                    String username = (String) request.get("username");
+                    //String username = (String) request.get("username");
                     String roomCode = (String) request.get("roomcode");
-                    boolean success = Lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    //boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
                     JSONObject response = new JSONObject();
                     response.put("request", "joined");
                     response.put("game", game);
                     response.put("roomcode", roomCode);
-                    response.put("player", Lobby.getRoom(game, roomCode).getPlayerCount());
-                    response.put("success", success);
+                    response.put("player", lobby.getPlayerCount(game, roomCode));
+                    //response.put("success", success);
                     conn.send(response.toJSONString());
                     break;
 
