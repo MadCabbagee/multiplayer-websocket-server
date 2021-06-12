@@ -95,6 +95,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     response.put("game", game);
                     response.put("roomcode", roomCode);
                     response.put("player", Lobby.getRoom(game, roomCode).getPlayerCount());
+                    response.put("success", success);
                     conn.send(response.toJSONString());
                     break;
 

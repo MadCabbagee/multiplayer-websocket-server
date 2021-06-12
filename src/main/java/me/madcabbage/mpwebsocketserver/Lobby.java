@@ -5,7 +5,7 @@ import java.util.*;
 public class Lobby {
     // Code
 //    private Map<String, Room> rooms;
-    private static final Map<String, Map<String, Room>> lobbies = new HashMap<>();
+    private static final Map<String, Map<String, Room>> lobbies = new HashMap<>(); // todo refactor to dictionary hashtable
 
     public static String createRoom(String game) {
         String code = generateCode();
@@ -69,5 +69,4 @@ public class Lobby {
     public static Room getRoom(String game, String roomCode) {
         return lobbies.get(game).get(roomCode);
     }
-
 }
