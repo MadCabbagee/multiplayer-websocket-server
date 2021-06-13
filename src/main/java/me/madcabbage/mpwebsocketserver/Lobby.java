@@ -14,7 +14,8 @@ public class Lobby {
 
 
     public Lobby() {
-        defaultRooms.put("default", new Room("chaos"));
+        //make the default list of rooms that will be returned by default if no list of rooms if found for a certain game.
+        defaultRooms.put("chaos", new Room("default"));
     }
 
     public static Map<String, Map<String, Room>> getLobbies() {
