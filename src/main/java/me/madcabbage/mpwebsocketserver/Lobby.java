@@ -1,6 +1,8 @@
 package me.madcabbage.mpwebsocketserver;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class Lobby {
     // Code
@@ -8,9 +10,15 @@ public class Lobby {
     //private static final Dictionary<String, Map<String, Room>> lobbies = new Hashtable<>();
     private static final Map<String, Map<String, Room>> lobbies = new HashMap<>();
     private static final Random rnd = new Random();
+    private final Map<String, Room> defaultRooms = new HashMap<>();
+
 
     public Lobby() {
+        defaultRooms.put("default", new Room("chaos"));
+    }
 
+    public static Map<String, Map<String, Room>> getLobbies() {
+        return lobbies;
     }
 
     public String createRoom(String game) {
@@ -30,7 +38,7 @@ public class Lobby {
         if (lobbies.containsKey(game)) {
             Map<String, Room> gameRoom = lobbies.get(game);
 
-            if (! gameRoom.containsKey(code)) {
+            if (!gameRoom.containsKey(code)) {
                 var newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
 
@@ -66,10 +74,6 @@ public class Lobby {
         return code.toString();
     }
 
-    public static Map<String, Map<String, Room>> getLobbies() {
-        return lobbies;
-    }
-
     public boolean addPlayer(String game, String roomCode, Player player) {
         var room = lobbies.get(game).get(roomCode);
         if (room != null) {
@@ -80,9 +84,6 @@ public class Lobby {
     }
 
     public int getPlayerCount(String game, String roomCode) {
-        Map<String, Room> defaultRooms = new HashMap<>();
-        defaultRooms.put(roomCode,  new Room(roomCode));
-
         var debug = false;
         if (debug) {
             var test = lobbies.get(game);
@@ -95,5 +96,18 @@ public class Lobby {
         }
 
         return lobbies.getOrDefault(game, defaultRooms).get(roomCode).getPlayerCount();
+    }
+
+    public Room getRoom(String game, String roomCode) {
+        return lobbies.getOrDefault(game, defaultRooms).get(roomCode);
+    }
+
+    public void deleteRoom(String game, String roomCode) {
+        if (lobbies.containsKey(game)) {
+            var rooms = lobbies.getOrDefault(game, defaultRooms);
+
+            rooms.remove(roomCode);
+
+        }
     }
 }
