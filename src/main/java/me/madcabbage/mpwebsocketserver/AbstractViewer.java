@@ -4,13 +4,13 @@ import org.java_websocket.WebSocket;
 
 public class AbstractViewer {
 
-    private WebSocket connection;
+    private final WebSocket connection;
     private Room currentRoom;
+    private String currentGame;
 
 
-    public AbstractViewer(WebSocket connection, Room currentRoom) {
+    public AbstractViewer(WebSocket connection) {
         this.connection = connection;
-        this.currentRoom = currentRoom;
     }
 
     public WebSocket getConnection() {
@@ -23,5 +23,13 @@ public class AbstractViewer {
 
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
+    }
+
+    public String getCurrentGame() {
+        return currentGame;
+    }
+
+    public void setCurrentGame(String currentGame) {
+        this.currentGame = currentGame;
     }
 }
