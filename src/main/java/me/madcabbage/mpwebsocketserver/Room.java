@@ -36,12 +36,14 @@ public class Room {
         }
     }
 
-    public void broadcast(String message, WebSocket exclusion) {
+    public void broadcast(String message, WebSocket... exclusion) {
         if (players.isEmpty()) return;
         for (Player p : players) {
             var connection = p.getConnection();
-            if (! connection.equals(exclusion)) {
-                connection.send(message);
+            for (WebSocket ex : exclusion) {
+                if (!connection.equals(ex)) {
+                    connection.send(message);
+                }
             }
         }
     }
@@ -56,10 +58,8 @@ public class Room {
 
     public List<WebSocket> getConnections() {
         ArrayList<WebSocket> connections = new ArrayList<>();
-        if (! players.isEmpty()) {
-            for (Player p : players) {
-                connections.add(p.getConnection());
-            }
+        for (Player p : players) {
+            connections.add(p.getConnection());
         }
         return connections;
     }
