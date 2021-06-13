@@ -81,8 +81,20 @@ public class Lobby {
     }
 
     public int getPlayerCount(String game, String roomCode) {
-        Map<String, Room> test = new HashMap<>();
-        test.put(roomCode,  new Room(roomCode));
-        return lobbies.getOrDefault(game, test).get(roomCode).getPlayerCount();
+        Map<String, Room> defaultRooms = new HashMap<>();
+        defaultRooms.put(roomCode,  new Room(roomCode));
+
+        boolean debug = false;
+        if (debug) {
+            var test = lobbies.get(game);
+            if (test != null) {
+                Room test2 = test.get(roomCode);
+                if (test2 != null) {
+                    int test3 = test2.getPlayerCount();
+                }
+            }
+        }
+
+        return lobbies.getOrDefault(game, defaultRooms).get(roomCode).getPlayerCount();
     }
 }
