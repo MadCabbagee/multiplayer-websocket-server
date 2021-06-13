@@ -47,7 +47,7 @@ public class Lobby {
             Map<String, Room> gameRooms = new HashMap<>();
             Room newRoom = new Room(code);
             gameRooms.put(code, newRoom);
-            lobbies.put("game", gameRooms);
+            lobbies.put(game, gameRooms);
         }
 
         return code;
@@ -81,7 +81,8 @@ public class Lobby {
     }
 
     public int getPlayerCount(String game, String roomCode) {
-
-        return lobbies.get(game).get(roomCode).getPlayerCount();
+        Map<String, Room> test = new HashMap<>();
+        test.put(roomCode,  new Room(roomCode));
+        return lobbies.getOrDefault(game, test).get(roomCode).getPlayerCount();
     }
 }
