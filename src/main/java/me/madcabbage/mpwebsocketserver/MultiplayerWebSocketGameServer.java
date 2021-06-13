@@ -89,9 +89,9 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                 case "join":
                     //String username = (String) request.get("username");
-                    String roomCode = (String) request.get("roomcode");
+                    var roomCode = (String) request.get("roomcode");
                     //boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
-                    JSONObject response = new JSONObject();
+                    var response = new JSONObject();
                     response.put("request", "joined");
                     response.put("game", game);
                     response.put("roomcode", roomCode);
@@ -137,8 +137,10 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             System.out.println("Starting Multiplayer WebSocketServer on '" + addr.getHostName() + ":" + addr.getPort() + "'");
             System.out.println(); // For spacing
         }
-
+        setTcpNoDelay(true);
     }
+
+
 
     public boolean isDebugEnabled() {
         return debugEnabled;
