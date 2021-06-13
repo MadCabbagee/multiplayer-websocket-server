@@ -1,5 +1,7 @@
 package me.madcabbage.mpwebsocketserver;
 
+import org.java_websocket.WebSocket;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +22,28 @@ public class Room {
     public void join(Player joiner) {
         players.add(joiner);
         playerCount++;
-        //return playerCount;
     }
 
     public void leave(Player player) {
         players.remove(player);
         playerCount--;
+    }
+
+    public void broadcast(String message) {
+        if (players.isEmpty()) return;
+        for (Player p : players) {
+            p.getConnection().send(message);
+        }
+    }
+
+    public void broadcast(String message, WebSocket exclusion) {
+        if (players.isEmpty()) return;
+        for (Player p : players) {
+            var connection = p.getConnection();
+            if (! connection.equals(exclusion)) {
+                connection.send(message);
+            }
+        }
     }
 
     public String getCode() {
@@ -34,6 +52,16 @@ public class Room {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<WebSocket> getConnections() {
+        ArrayList<WebSocket> connections = new ArrayList<>();
+        if (! players.isEmpty()) {
+            for (Player p : players) {
+                connections.add(p.getConnection());
+            }
+        }
+        return connections;
     }
 
     public synchronized int getPlayerCount() {
