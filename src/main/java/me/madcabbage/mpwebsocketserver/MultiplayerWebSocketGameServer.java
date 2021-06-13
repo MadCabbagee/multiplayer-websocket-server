@@ -99,13 +99,9 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                 case "join":
 
-
-                    //boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
-
                     String username = (String) request.get("username");
                     if (username == null) {
                         SendError(conn,"No usernane in message, send the username next time");
-
                         break;
                     }
 
@@ -126,7 +122,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     response.put("game", game);
                     response.put("roomcode", roomCode);
                     response.put("player", lobby.getPlayerCount(game, roomCode));
-                    //response.put("success", success);
+                    response.put("success", success);
                     conn.send(response.toJSONString());
                     break;
 
@@ -141,6 +137,9 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "relay":
                     // broadcast to all players but the sender.
                     break;
+                case "view":
+                    // add viewer to lobby
+                    // req: view, game: chaos, roomcode: code,
 
             }
         } catch (ParseException e) {
