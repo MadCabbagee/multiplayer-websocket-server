@@ -100,29 +100,35 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "join":
 
                     String username = (String) request.get("username");
-                    if (username == null) {
-                        SendError(conn,"No usernane in message, send the username next time");
-                        break;
-                    }
-
                     var roomCode = (String) request.get("roomcode");
-                    if (roomCode == null) {
-                        SendError(conn,"No roomcode in message, send the username next time");
-                        break;
-                    }
-
                     boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
-                    if (!success) {
-                        SendError(conn,"Something else is wrong... Add player failed.");
-                        break;
-                    }
+                    boolean debug = false;
+                    if (debug) {
 
+                        if (username == null) {
+                            SendError(conn, "No usernane in message, send the username next time");
+                            break;
+                        }
+                        if (roomCode == null) {
+                            SendError(conn, "No roomcode in message, send the username next time");
+                            break;
+                        }
+                        if (!success) {
+                            SendError(conn, "Something else is wrong... Add player failed.");
+                            break;
+                        }
+                    }
                     var response = new JSONObject();
                     response.put("request", "joined");
                     response.put("game", game);
                     response.put("roomcode", roomCode);
                     response.put("player", lobby.getPlayerCount(game, roomCode));
                     response.put("success", success);
+
+                    if (debugEnabled) {
+                        System.out.println(response.toJSONString());
+                    }
+
                     conn.send(response.toJSONString());
                     break;
 
