@@ -2,15 +2,13 @@ package me.madcabbage.mpwebsocketserver;
 
 import org.java_websocket.WebSocket;
 
-public class Player {
+public class Player extends AbstractViewer {
 
     private String username;
-    private WebSocket connection;
-    private Room currentRoom;
     private String currentGame;
 
     public Player(WebSocket connection, String username) {
-        this.connection = connection;
+        super(connection);
         this.username = username;
     }
 
@@ -22,14 +20,6 @@ public class Player {
         this.username = username;
     }
 
-    public Room getCurrentRoom() {
-        return currentRoom;
-    }
-
-    public void setCurrentRoom(Room currentRoom) {
-        this.currentRoom = currentRoom;
-    }
-
     public String getCurrentGame() {
         return currentGame;
     }
@@ -38,7 +28,4 @@ public class Player {
         this.currentGame = currentGame;
     }
 
-    public WebSocket getConnection() {
-        return connection;
-    }
 }
