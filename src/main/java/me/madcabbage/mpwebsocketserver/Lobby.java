@@ -32,20 +32,20 @@ public class Lobby {
             Map<String, Room> gameRoom = lobbies.get(game);
 
             if (! gameRoom.containsKey(code)) {
-                Room newRoom = new Room(code);
+                var newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
 
             } else {
                 while (gameRoom.containsKey(code)) {
                     code = generateCode();
                 }
-                Room newRoom = new Room(code);
+                var newRoom = new Room(code);
                 gameRoom.put(code, newRoom);
             }
 
         } else {
             Map<String, Room> gameRooms = new HashMap<>();
-            Room newRoom = new Room(code);
+            var newRoom = new Room(code);
             gameRooms.put(code, newRoom);
             lobbies.put(game, gameRooms);
         }
