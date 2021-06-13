@@ -23,6 +23,7 @@ public class Lobby {
 
     public String createRoom(String game) {
         String code = generateCode();
+        //Testing 1234
 /*        var gameRoom = lobbies.get(game);
         if (gameRoom.containsKey(code)) {
             Room newRoom = new Room(code);
