@@ -2,17 +2,18 @@ package me.madcabbage.mpwebsocketserver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Room {
 
     private final String code;
     private final List<Player> players;
+    private final List<Spectator> spectators;
     private int playerCount;
 
     public Room(String roomCode) {
         this.code = roomCode;
         players = new ArrayList<>();
+        spectators = new ArrayList<>();
         playerCount = 0;
     }
 
