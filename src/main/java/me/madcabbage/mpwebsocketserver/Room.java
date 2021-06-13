@@ -22,6 +22,11 @@ public class Room {
         //return playerCount;
     }
 
+    public void leave(Player player) {
+        players.remove(player);
+        playerCount--;
+    }
+
     public String getCode() {
         return code;
     }
