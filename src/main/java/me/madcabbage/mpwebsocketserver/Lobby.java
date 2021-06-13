@@ -55,11 +55,11 @@ public class Lobby {
 
     public String generateCode() {
         // generate a 6 character/digit room code
-        final String dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        final StringBuilder code = new StringBuilder();
-        final int length = 4;
+        final var dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        final var code = new StringBuilder();
+        final var length = 4;
 
-        for (int i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
             // append a random character from dictionary to the code string
             code.append(dict.charAt(rnd.nextInt(dict.length())));
         }
@@ -72,7 +72,7 @@ public class Lobby {
     }
 
     public boolean addPlayer(String game, String roomCode, Player player) {
-        Room room = lobbies.get(game).get(roomCode);
+        var room = lobbies.get(game).get(roomCode);
         if (room != null) {
             room.join(player);
             return true;
@@ -84,7 +84,7 @@ public class Lobby {
         Map<String, Room> defaultRooms = new HashMap<>();
         defaultRooms.put(roomCode,  new Room(roomCode));
 
-        boolean debug = false;
+        var debug = false;
         if (debug) {
             var test = lobbies.get(game);
             if (test != null) {
