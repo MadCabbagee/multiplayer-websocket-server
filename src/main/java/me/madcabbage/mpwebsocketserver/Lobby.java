@@ -15,7 +15,6 @@ public class Lobby {
 
     public String createRoom(String game) {
         String code = generateCode();
-
 /*        var gameRoom = lobbies.get(game);
         if (gameRoom.containsKey(code)) {
             Room newRoom = new Room(code);
@@ -27,7 +26,7 @@ public class Lobby {
             Room newRoom = new Room(code);
             gameRoom.put(code, newRoom);
         }*/
-
+        var asdf = "asdf";
         if (lobbies.containsKey(game)) {
             Map<String, Room> gameRoom = lobbies.get(game);
 
