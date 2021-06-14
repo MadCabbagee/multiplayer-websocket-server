@@ -11,6 +11,9 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 class Keys {
+
+    
+
     public static final String Request = "request";
     public static final String Game = "game";
     public static final String RoomCode = "roomcode";
@@ -29,6 +32,9 @@ class Requests {
     public static final String End = "end";
     public static final String Joined = "joined";
     public static final String Error = "error";
+    public static final String Spectate = "view";
+    public static final String Ready = "ready";
+    public static final String UnReady = "unready";
 }
 class Games {
     public static final String DefaultCode = "default";
@@ -115,7 +121,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             String game = (String) request.get(Keys.Game);
 
             switch (reqType.toLowerCase()) {
-                case "create":
+                case Requests.Create:
                     // Create a new room, give it the creator, send back the roomcode
                     String code = lobby.createRoom(game);
                     request.put(Keys.RoomCode, code);
@@ -123,7 +129,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     System.out.println(request.toJSONString());
                     break;
 
-                case "join":
+                case Requests.Join:
                     String username = (String) request.get(Keys.Username);
                     var roomCode = (String) request.get(Keys.RoomCode);
                     int playerCount = lobby.getPlayerCount(game, roomCode) + 1; // account for this connection cause it hasnt been added yet
@@ -182,7 +188,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     }
                     break;
 
-                case "start":
+                case Requests.Start:
                     // Broadcast to all players that the game is starting.
                     Player player = conn.getAttachment(); // todo: add readyState and id to player class and attach player object
                     player.setReadyState(true);
@@ -202,27 +208,27 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     }
                     break;
 
-                case "end":
+                case Requests.End:
                     // end the current game. Wait for another round to start, or delete room if everyone leaves.
                     lobby.getRoom(game, (String) request.get(Keys.RoomCode)).broadcast(message); //todo same as ln 159
                     break;
 
-                case "relay":
+                case Requests.Relay:
                     // broadcast to all players but the sender. NOTE: client will have to do the checking of what type of relay it is.
                     lobby.getRoom(game, (String) request.get(Keys.RoomCode)).broadcast(message, conn);
                     break;
-                case "view":
+                case Requests.Spectate:
                     // add viewer to lobby
                     // req: view, game: chaos, roomcode: code,
                     // refactor to check for spectator in username. (client has checkbox that sets username to spectator or something)
                     break;
-                case "ready":
+                case Requests.Ready:
                     // letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting,
                     // if its clicked again it unreadies. Once all are ready, the start button will appear.
                     // note refactor to using more specific messages like this later.
 
                     break;
-                case "unready":
+                case Requests.UnReady:
 
                     break;
             }
