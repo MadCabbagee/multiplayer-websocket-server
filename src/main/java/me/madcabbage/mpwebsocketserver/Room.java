@@ -42,7 +42,7 @@ public class Room {
     }
 
     public void broadcast(String message, WebSocket... exclusion) {
-        if (players.isEmpty()) return;
+        if (getViewers().isEmpty()) return;
         for (Player p : players) {
             var connection = p.getConnection();
             for (WebSocket ex : exclusion) {
@@ -83,5 +83,15 @@ public class Room {
 
     public List<AbstractViewer> getViewers() {
         return Stream.concat(players.stream(), spectators.stream()).collect(Collectors.toList());
+    }
+
+    public boolean isReady() {
+        for (Player p : players) {
+            if ( ! (boolean) p.getConnection().getAttachment()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
