@@ -87,6 +87,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             String reqType = (String) request.get("request");
             String game = (String) request.get("game");
 
+            // todo Add a ready request, letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting, if its clicked again it unreadies. Once all are ready, the start button will appear.
             switch (reqType.toLowerCase()) {
                 case "create":
                     // Create a new room, give it the creator, send back the roomcode
@@ -152,14 +153,16 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     }
                     break;
 
-                // todo Add a ready request, letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting, if its clicked again it unreadies. Once all are ready, the start button will appear.
                 case "start":
                     // Broadcast to all players that the game is starting.
-
+                    code = (String) request.get("roomCode");
+                    lobby.getRoom(game, code).broadcast(message); // todo: When we get this part of the client working, make sure that the fields in the json are proper to send to all connections, if not change it.
                     break;
 
                 case "end":
-                    // disconnect all players from the room and remove from the list
+                    // end the current game. Wait for another round to start, or delete room if everyone leaves.
+                    code = (String) request.get("roomCode");
+                    lobby.getRoom(game, code).broadcast(message, conn); //todo same as ln 159
                     break;
 
                 case "relay":
