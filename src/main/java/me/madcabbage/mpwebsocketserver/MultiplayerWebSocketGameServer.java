@@ -154,6 +154,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                 case "start":
                     // Broadcast to all players that the game is starting.
+                    conn.setAttachment(true);
                     code = (String) request.get("roomCode");
                     lobby.getRoom(game, code).broadcast(message); // todo: When we get this part of the client working, make sure that the fields in the json are proper to send to all connections, if not change it.
                     break;
