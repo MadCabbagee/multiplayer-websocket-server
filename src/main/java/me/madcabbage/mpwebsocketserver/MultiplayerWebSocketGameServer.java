@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     private static final JSONParser parser = new JSONParser();
@@ -156,7 +157,12 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     // Broadcast to all players that the game is starting.
                     conn.setAttachment(true);
                     code = (String) request.get("roomCode");
-                    lobby.getRoom(game, code).broadcast(message); // todo: When we get this part of the client working, make sure that the fields in the json are proper to send to all connections, if not change it.
+                    var room = lobby.getRoom(game, code);
+                    if (room.isReady()) {
+                        room.broadcast(message);
+                    } else {
+                        room.broadcast(message); // todo: When we get this part of the client working, make sure that the fields in the json are proper to send to all connections, if not change it.
+                    }
                     break;
 
                 case "end":
@@ -172,9 +178,11 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "view":
                     // add viewer to lobby
                     // req: view, game: chaos, roomcode: code,
-                /*case "ready":
+                    break;
+                case "ready":
                     // letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting,
                     // if its clicked again it unreadies. Once all are ready, the start button will appear.
+                    // note refactor to using more specific messages like this later.
 
                     break;*/
                 case "unready":
