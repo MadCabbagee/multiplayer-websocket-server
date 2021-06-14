@@ -126,7 +126,10 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "join":
                     String username = (String) request.get(Keys.Username);
                     var roomCode = (String) request.get(Keys.RoomCode);
-                    boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
+                    int playerCount = lobby.getPlayerCount(game, roomCode) + 1; // account for this connection cause it hasnt been added yet
+                    Player joiningPlayer = new Player(conn, username, playerCount);
+                    boolean success = lobby.addPlayer(game, roomCode, joiningPlayer);
+
                     boolean debug = false;
                     if (debug) {
 
@@ -143,8 +146,8 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                             break;
                         }
                     }
-                    // also used as player id
-                    int playerCount = lobby.getPlayerCount(game, roomCode);
+
+
                     var joinedRoom = lobby.getRoom(game, roomCode);
 
                     var response = new JSONObject();
@@ -160,7 +163,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                         System.out.println(response.toJSONString());
                     }
                     if (success) {
-                        conn.setAttachment(false);
+                        conn.setAttachment(joiningPlayer);
                         // broadcast if not the only player in the room
                         if (playerCount < 2) {
                             conn.send(response.toJSONString());
@@ -181,14 +184,19 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                 case "start":
                     // Broadcast to all players that the game is starting.
-                    conn.setAttachment(true);
+                    Player player = conn.getAttachment(); // todo: add readyState and id to player class and attach player object
+                    player.setReadyState(true);
+
                     code = (String) request.get(Keys.RoomCode);
                     var room = lobby.getRoom(game, code);
                     if (room.isReady()) {
                         JSONObject startingResponse = new JSONObject();
                         startingResponse.put(Keys.Request, Requests.Starting);
                         startingResponse.put(Keys.Game, Games.Chaos);
-                        room.broadcast(message);
+                        startingResponse.put(Keys.RoomCode, code);
+                        startingResponse.put(Keys.Player, player.getID());
+                        startingResponse.put(Keys.Username, player.getUsername());
+                        room.broadcast(startingResponse.toJSONString());
                     } else {
                         room.broadcast(message); // todo: When we get this part of the client working, make sure that the fields in the json are proper to send to all connections, if not change it.
                     }
