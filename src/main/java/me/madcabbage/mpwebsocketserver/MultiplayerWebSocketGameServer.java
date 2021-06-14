@@ -50,7 +50,19 @@ class Games {
 }
 class Messages {
 
+
     private Messages() {}
+
+    public static final String ConnectionAccepted = "Connection Accepted";
+    public static final String RemoteAddress = "\tRemote Address: ";
+    public static final String ConnectionClosed = "Connection Closed.";
+    public static final String Code = "\tCode: ";
+    public static final String Reason = "\tReason: ";
+    public static final String Remote = "\tRemote: ";
+    public static final String MessageReceived = "Message Received:";
+    public static final String Message = "\tMessage: ";
+    public static final String Quit = "quit";
+    public static final String ErrorEncountered = "Error Encountered";
 }
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
@@ -87,8 +99,8 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         // DEBUGGING
         if (debugEnabled) {
-            System.out.println("Connection Accepted");
-            System.out.println("\tRemote Address: " + conn.getRemoteSocketAddress());
+            System.out.println(Messages.ConnectionAccepted);
+            System.out.println(Messages.RemoteAddress + conn.getRemoteSocketAddress());
             System.out.println(); // For spacing
         }
 
@@ -100,11 +112,11 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         // DEBUGGING
         if (debugEnabled) {
-            System.out.println("Connection Closed.");
-            System.out.println("\tRemote Address: " + conn.getRemoteSocketAddress());
-            System.out.println("\tCode: " + code);
-            System.out.println("\tReason: " + reason);
-            System.out.println("\tRemote: " + remote);
+            System.out.println(Messages.ConnectionClosed);
+            System.out.println(Messages.RemoteAddress + conn.getRemoteSocketAddress());
+            System.out.println(Messages.Code + code);
+            System.out.println(Messages.Reason + reason);
+            System.out.println(Messages.Remote + remote);
             System.out.println(); // For spacing
         }
     }
@@ -114,12 +126,12 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     public void onMessage(WebSocket conn, String message) {
         // DEBUGGING
         if (debugEnabled) {
-            System.out.println("Message Received:");
-            System.out.println("\tRemote Address: " + conn.getRemoteSocketAddress());
-            System.out.println("\tMessage: " + message);
+            System.out.println(Messages.MessageReceived);
+            System.out.println(Messages.RemoteAddress + conn.getRemoteSocketAddress());
+            System.out.println(Messages.Message + message);
             System.out.println(); // For spacing
 
-            if (message.equalsIgnoreCase("q")) {
+            if (message.equalsIgnoreCase(Messages.Quit)) {
                 conn.closeConnection(1, "Connection closed by the user.");
             }
         }
@@ -143,7 +155,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     String username = (String) request.get(Keys.Username);
                     var roomCode = (String) request.get(Keys.RoomCode);
                     int playerCount = lobby.getPlayerCount(game, roomCode) + 1; // account for this connection cause it hasnt been added yet
-                    Player joiningPlayer = new Player(conn, username, playerCount);
+                    var joiningPlayer = new Player(conn, username, playerCount);
                     boolean success = lobby.addPlayer(game, roomCode, joiningPlayer);
 
                     boolean debug = false;
@@ -251,7 +263,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     public void onError(WebSocket conn, Exception ex) {
         // DEBUGGING
         if (debugEnabled) {
-            System.out.println("Error Encountered");
+            System.out.println(Messages.ErrorEncountered);
             ex.printStackTrace();
             System.out.println(); // For spacing
         }
