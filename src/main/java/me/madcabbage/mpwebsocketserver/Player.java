@@ -4,12 +4,16 @@ import org.java_websocket.WebSocket;
 
 public class Player extends AbstractViewer {
 
+    private final int ID;
     private String username;
+    private boolean readyState;
 
 
-    public Player(WebSocket connection, String username) {
+    public Player(WebSocket connection, String username, int ID) {
         super(connection);
         this.username = username;
+        this.ID = ID;
+        readyState = false;
     }
 
     public String getUsername() {
@@ -20,4 +24,15 @@ public class Player extends AbstractViewer {
         this.username = username;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public boolean isReady() {
+        return readyState;
+    }
+
+    public void setReadyState(boolean readyState) {
+        this.readyState = readyState;
+    }
 }
