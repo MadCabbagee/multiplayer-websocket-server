@@ -87,7 +87,8 @@ public class Room {
 
     public boolean isReady() {
         for (Player p : players) {
-            if ( ! (boolean) p.getConnection().getAttachment()) {
+            // if any player is not ready, return false. Otherwise they are all ready so it returns true.
+            if (! p.isReady()) {
                 return false;
             }
         }
