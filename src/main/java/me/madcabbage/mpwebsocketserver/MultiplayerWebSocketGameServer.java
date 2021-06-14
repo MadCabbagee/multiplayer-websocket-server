@@ -48,6 +48,10 @@ class Games {
     public static final String Pool = "pool";
     public static final String GinRummy = "ginrummy";
 }
+class Messages {
+
+    private Messages() {}
+}
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     private static final JSONParser parser = new JSONParser();
