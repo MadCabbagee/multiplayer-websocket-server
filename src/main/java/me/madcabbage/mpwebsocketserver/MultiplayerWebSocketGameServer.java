@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
@@ -27,19 +28,17 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
         this.lobby = new Lobby();
     }
 
-    public void SendError(WebSocket conn, String msg) {
+    public static void main(String[] args) {
+        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
+        server.run();
+    }
+
+    public void sendError(WebSocket conn, String msg) {
         JSONObject response = new JSONObject();
         //Make it look like below, should be fine.
         response.put("request", "error");
         response.put("message", msg);
         conn.send(response.toJSONString());
-    }
-
-
-
-    public static void main(String[] args) {
-        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
-        server.run();
     }
 
     @Override
@@ -106,34 +105,57 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     if (debug) {
 
                         if (username == null) {
-                            SendError(conn, "No usernane in message, send the username next time");
+                            sendError(conn, "No usernane in message, send the username next time");
                             break;
                         }
                         if (roomCode == null) {
-                            SendError(conn, "No roomcode in message, send the username next time");
+                            sendError(conn, "No roomcode in message, send the username next time");
                             break;
                         }
                         if (!success) {
-                            SendError(conn, "Something else is wrong... Add player failed.");
+                            sendError(conn, "Something else is wrong... Add player failed.");
                             break;
                         }
                     }
+                    // also used as player id
+                    int playerCount = lobby.getPlayerCount(game, roomCode);
+                    var joinedRoom = lobby.getRoom(game, roomCode);
+
                     var response = new JSONObject();
                     response.put("request", "joined");
                     response.put("game", game);
                     response.put("roomcode", roomCode);
-                    response.put("player", lobby.getPlayerCount(game, roomCode));
+                    response.put("player", playerCount);
                     response.put("success", success);
 
+
+                    // DEBUGGING - print response
                     if (debugEnabled) {
                         System.out.println(response.toJSONString());
                     }
-
-                    conn.send(response.toJSONString());
+                    if (success) {
+                        // broadcast if not the only player in the room
+                        if (playerCount < 2) {
+                            conn.send(response.toJSONString());
+                        } else {
+                            // broadcast to all that someone joined. (including current connection)
+                            joinedRoom.broadcast(response.toJSONString());
+                            // get cached responses for this room so we can tell current connection about the other players that have already joined
+                            var cachedResponses = (ArrayList<JSONObject>) joinedRoom.getCachedJoinResponses();
+                            // tell current connection about each player that is in the room.
+                            for (JSONObject cached : cachedResponses) {
+                                conn.send(cached.toJSONString());
+                            }
+                        }
+                        // cache the join response
+                        joinedRoom.cacheResponse(response);
+                    }
                     break;
 
+                // todo Add a ready request, letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting, if its clicked again it unreadies. Once all are ready, the start button will appear.
                 case "start":
                     // Broadcast to all players that the game is starting.
+
                     break;
 
                 case "end":
