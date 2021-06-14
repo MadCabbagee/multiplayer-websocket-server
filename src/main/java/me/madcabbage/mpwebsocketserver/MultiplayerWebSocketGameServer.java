@@ -10,6 +10,32 @@ import org.json.simple.parser.ParseException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+class Keys {
+    public static final String Request = "request";
+    public static final String Game = "game";
+    public static final String RoomCode = "roomcode";
+    public static final String Player = "player";
+    public static final String Username = "username";
+    public static final String Message = "message";
+    public static final String Success = "success";
+    public static final String Payload = "payload";
+}
+class Requests {
+    public static final String Create = "create";
+    public static final String Join = "join";
+    public static final String Start = "start";
+    public static final String Starting = "starting";
+    public static final String Relay = "relay";
+    public static final String End = "end";
+    public static final String Joined = "joined";
+    public static final String Error = "error";
+}
+class Games {
+    public static final String DefaultCode = "default";
+    public static final String Chaos = "chaos";
+    public static final String Pool = "pool";
+    public static final String GinRummy = "ginrummy";
+}
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     private static final JSONParser parser = new JSONParser();
@@ -36,8 +62,8 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     public void sendError(WebSocket conn, String msg) {
         JSONObject response = new JSONObject();
         //Make it look like below, should be fine.
-        response.put("request", "error");
-        response.put("message", msg);
+        response.put(Keys.Request, Requests.Error);
+        response.put(Keys.Message, msg);
         conn.send(response.toJSONString());
     }
 
@@ -85,21 +111,21 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
         try {
             JSONObject request = (JSONObject) parser.parse(message);
 
-            String reqType = (String) request.get("request");
-            String game = (String) request.get("game");
+            String reqType = (String) request.get(Keys.Request);
+            String game = (String) request.get(Keys.Game);
 
             switch (reqType.toLowerCase()) {
                 case "create":
                     // Create a new room, give it the creator, send back the roomcode
                     String code = lobby.createRoom(game);
-                    request.put("roomcode", code);
+                    request.put(Keys.RoomCode, code);
                     conn.send(request.toJSONString());
                     System.out.println(request.toJSONString());
                     break;
 
                 case "join":
-                    String username = (String) request.get("username");
-                    var roomCode = (String) request.get("roomcode");
+                    String username = (String) request.get(Keys.Username);
+                    var roomCode = (String) request.get(Keys.RoomCode);
                     boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
                     boolean debug = false;
                     if (debug) {
@@ -122,11 +148,11 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     var joinedRoom = lobby.getRoom(game, roomCode);
 
                     var response = new JSONObject();
-                    response.put("request", "joined");
-                    response.put("game", game);
-                    response.put("roomcode", roomCode);
-                    response.put("player", playerCount);
-                    response.put("success", success);
+                    response.put(Keys.Request, Requests.Joined);
+                    response.put(Keys.Game, game);
+                    response.put(Keys.RoomCode, roomCode);
+                    response.put(Keys.Player, playerCount);
+                    response.put(Keys.Success, success);
 
 
                     // DEBUGGING - print response
@@ -156,9 +182,12 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "start":
                     // Broadcast to all players that the game is starting.
                     conn.setAttachment(true);
-                    code = (String) request.get("roomCode");
+                    code = (String) request.get(Keys.RoomCode);
                     var room = lobby.getRoom(game, code);
                     if (room.isReady()) {
+                        JSONObject startingResponse = new JSONObject();
+                        startingResponse.put(Keys.Request, Requests.Starting);
+                        startingResponse.put(Keys.Game, Games.Chaos);
                         room.broadcast(message);
                     } else {
                         room.broadcast(message); // todo: When we get this part of the client working, make sure that the fields in the json are proper to send to all connections, if not change it.
@@ -167,17 +196,17 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                 case "end":
                     // end the current game. Wait for another round to start, or delete room if everyone leaves.
-                    code = (String) request.get("roomCode");
-                    lobby.getRoom(game, code).broadcast(message, conn); //todo same as ln 159
+                    lobby.getRoom(game, (String) request.get(Keys.RoomCode)).broadcast(message); //todo same as ln 159
                     break;
 
                 case "relay":
                     // broadcast to all players but the sender. NOTE: client will have to do the checking of what type of relay it is.
-                    lobby.getRoom(game, (String) request.get("roomCode")).broadcast(message, conn);
+                    lobby.getRoom(game, (String) request.get(Keys.RoomCode)).broadcast(message, conn);
                     break;
                 case "view":
                     // add viewer to lobby
                     // req: view, game: chaos, roomcode: code,
+                    // refactor to check for spectator in username. (client has checkbox that sets username to spectator or something)
                     break;
                 case "ready":
                     // letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting,
