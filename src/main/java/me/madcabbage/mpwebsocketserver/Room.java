@@ -1,15 +1,19 @@
 package me.madcabbage.mpwebsocketserver;
 
 import org.java_websocket.WebSocket;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Room {
 
     private final String code;
     private final List<Player> players;
     private final List<Spectator> spectators;
+    private final List<JSONObject> cachedResponses;
     private int playerCount;
 
     public Room(String roomCode) {
@@ -17,6 +21,7 @@ public class Room {
         players = new ArrayList<>();
         spectators = new ArrayList<>();
         playerCount = 0;
+        cachedResponses = new ArrayList<>();
     }
 
     public void join(Player joiner) {
@@ -66,5 +71,17 @@ public class Room {
 
     public synchronized int getPlayerCount() {
         return playerCount;
+    }
+
+    public void cacheResponse(JSONObject response) {
+        cachedResponses.add(response);
+    }
+
+    public List<JSONObject> getCachedJoinResponses() {
+        return cachedResponses;
+    }
+
+    public List<AbstractViewer> getViewers() {
+        return Stream.concat(players.stream(), spectators.stream()).collect(Collectors.toList());
     }
 }
