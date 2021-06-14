@@ -171,11 +171,11 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case "view":
                     // add viewer to lobby
                     // req: view, game: chaos, roomcode: code,
-                case "ready":
+                /*case "ready":
                     // letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting,
                     // if its clicked again it unreadies. Once all are ready, the start button will appear.
 
-                    break;
+                    break;*/
                 case "unready":
 
                     break;
