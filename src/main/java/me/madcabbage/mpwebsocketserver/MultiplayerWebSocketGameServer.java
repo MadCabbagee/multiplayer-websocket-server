@@ -9,7 +9,6 @@ import org.json.simple.parser.ParseException;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     private static final JSONParser parser = new JSONParser();
@@ -67,6 +66,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
         }
     }
 
+    // Todo: Implement JsonWebtokens and add them to the responses to validate? Maybe client can generate some sort of unique token that would be hard to figure out how its generated. and send to server and server process it to validate each request?
     @Override
     public void onMessage(WebSocket conn, String message) {
         // DEBUGGING
@@ -87,7 +87,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             String reqType = (String) request.get("request");
             String game = (String) request.get("game");
 
-            // todo Add a ready request, letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting, if its clicked again it unreadies. Once all are ready, the start button will appear.
             switch (reqType.toLowerCase()) {
                 case "create":
                     // Create a new room, give it the creator, send back the roomcode
@@ -98,7 +97,6 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     break;
 
                 case "join":
-
                     String username = (String) request.get("username");
                     var roomCode = (String) request.get("roomcode");
                     boolean success = lobby.addPlayer(game, roomCode, new Player(conn, username));
@@ -135,6 +133,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                         System.out.println(response.toJSONString());
                     }
                     if (success) {
+                        conn.setAttachment(false);
                         // broadcast if not the only player in the room
                         if (playerCount < 2) {
                             conn.send(response.toJSONString());
@@ -166,12 +165,20 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     break;
 
                 case "relay":
-                    // broadcast to all players but the sender.
+                    // broadcast to all players but the sender. NOTE: client will have to do the checking of what type of relay it is.
+                    lobby.getRoom(game, (String) request.get("roomCode")).broadcast(message, conn);
                     break;
                 case "view":
                     // add viewer to lobby
                     // req: view, game: chaos, roomcode: code,
+                case "ready":
+                    // letting the other games know who is ready to start, once all click Ready button, it turns green and says waiting,
+                    // if its clicked again it unreadies. Once all are ready, the start button will appear.
 
+                    break;
+                case "unready":
+
+                    break;
             }
         } catch (ParseException e) {
             e.printStackTrace();
