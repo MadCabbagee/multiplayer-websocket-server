@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class Lobby {
-    // Code
-//    private Map<String, Room> rooms;
-    //private static final Dictionary<String, Map<String, Room>> lobbies = new Hashtable<>();
+
     private static final Map<String, Map<String, Room>> lobbies = new HashMap<>();
     private static final Random rnd = new Random();
     private final Map<String, Room> defaultRooms = new HashMap<>();
