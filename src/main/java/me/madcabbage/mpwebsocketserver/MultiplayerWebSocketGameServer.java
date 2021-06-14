@@ -184,7 +184,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     // if its clicked again it unreadies. Once all are ready, the start button will appear.
                     // note refactor to using more specific messages like this later.
 
-                    break;*/
+                    break;
                 case "unready":
 
                     break;
