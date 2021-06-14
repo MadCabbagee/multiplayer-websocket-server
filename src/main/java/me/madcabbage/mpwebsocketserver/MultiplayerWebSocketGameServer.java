@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 class Keys {
 
-    
+    private Keys() {}
 
     public static final String Request = "request";
     public static final String Game = "game";
@@ -24,6 +24,9 @@ class Keys {
     public static final String Payload = "payload";
 }
 class Requests {
+
+    private Requests() {}
+
     public static final String Create = "create";
     public static final String Join = "join";
     public static final String Start = "start";
@@ -37,6 +40,9 @@ class Requests {
     public static final String UnReady = "unready";
 }
 class Games {
+
+    private Games() {}
+
     public static final String DefaultCode = "default";
     public static final String Chaos = "chaos";
     public static final String Pool = "pool";
