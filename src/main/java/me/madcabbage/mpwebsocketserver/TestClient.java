@@ -5,6 +5,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.simple.JSONObject;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -50,7 +51,7 @@ public class TestClient extends WebSocketClient {
         ex.printStackTrace();
     }
 
-    public static void cmain(String[] args) {
+    public static void main(String[] args) {
         try (Scanner cin = new Scanner(System.in)) {
 
             CommandLine cmdLine = parseArgs(args);
@@ -64,6 +65,7 @@ public class TestClient extends WebSocketClient {
             Thread.sleep(1500);
 
             TestClient.run = true;
+
             while (run) {
                 System.out.println("Enter a message to send to the server: ");
                 client.send(cin.nextLine());
