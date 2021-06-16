@@ -50,7 +50,6 @@ class Games {
 }
 class Messages {
 
-
     private Messages() {}
 
     public static final String ConnectionAccepted = "Connection Accepted";
@@ -83,7 +82,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
     }
 
     public static void main(String[] args) {
-        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("localhost", 82), true);
+        WebSocketServer server = new MultiplayerWebSocketGameServer(new InetSocketAddress("0.0.0.0", 82), true);
         server.run();
     }
 
@@ -131,7 +130,9 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             System.out.println(Messages.Message + message);
             System.out.println(); // For spacing
 
+            // Ignore this, this message will only be used by the testing client.
             if (message.equalsIgnoreCase(Messages.Quit)) {
+                System.out.println("Quit message received, closing connection");
                 conn.closeConnection(1, "Connection closed by the user.");
             }
         }
@@ -144,11 +145,20 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
             switch (reqType.toLowerCase()) {
                 case Requests.Create:
+                    // DEBUGGING
+                    if (debugEnabled) {
+                        System.out.println("Create request received: " + request.toJSONString());
+                    }
+
                     // Create a new room, give it the creator, send back the roomcode
                     String code = lobby.createRoom(game);
                     request.put(Keys.RoomCode, code);
                     conn.send(request.toJSONString());
-                    System.out.println(request.toJSONString());
+
+                    // DEBUGGING
+                    if (debugEnabled) {
+                        System.out.println("Generated create response: " + request.toJSONString());
+                    }
                     break;
 
                 case Requests.Join:
@@ -158,11 +168,10 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                     var joiningPlayer = new Player(conn, username, playerCount);
                     boolean success = lobby.addPlayer(game, roomCode, joiningPlayer);
 
-                    boolean debug = false;
-                    if (debug) {
+                    if (debugEnabled) {
 
                         if (username == null) {
-                            sendError(conn, "No usernane in message, send the username next time");
+                            sendError(conn, "No username in message, send the username next time");
                             break;
                         }
                         if (roomCode == null) {
@@ -173,8 +182,9 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                             sendError(conn, "Something else is wrong... Add player failed.");
                             break;
                         }
-                    }
 
+                        System.out.println("");
+                    }
 
                     var joinedRoom = lobby.getRoom(game, roomCode);
 
@@ -188,7 +198,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
                     // DEBUGGING - print response
                     if (debugEnabled) {
-                        System.out.println(response.toJSONString());
+                        System.out.println("Generated join response: " + response.toJSONString());
                     }
                     if (success) {
                         conn.setAttachment(joiningPlayer);
