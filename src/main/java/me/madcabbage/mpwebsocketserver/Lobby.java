@@ -48,7 +48,7 @@ public class Lobby {
     }
 
     public String generateCode() {
-        // generate a 6 character/digit room code
+        // generate a 4 character/digit room code
         final var dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         final var code = new StringBuilder();
         final var length = 4;
