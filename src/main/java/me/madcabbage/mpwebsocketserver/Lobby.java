@@ -4,23 +4,39 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+//A lobby stores a map of game name to a Room class.
+/*
 public class Lobby {
-
-    private static final Map<String, Map<String, Room>> lobbies = new HashMap<>();
+    private static Map<String, Room>  lobbies = new HashMap<String, Room>();
     private static final Random rnd = new Random();
-    private final Map<String, Room> defaultRooms = new HashMap<>();
-
 
     public Lobby() {
-        defaultRooms.put("default", new Room("chaos"));
     }
 
-    public static Map<String, Map<String, Room>> getLobbies() {
+    public static Map<String, Room> getLobbies() {
         return lobbies;
     }
-
+    //Make a new room with a unique ID in the appropriate lobby (game)
+    //Return the room code
     public String createRoom(String game) {
+        Boolean found = false;
+
+        //Let's see if that game exists
+        if (!lobbies.containsKey((game))) {
+            lobbies.put(game,new Room(game));
+        }
+
+        Lobby ourLobby = lobbies.get(game);
+
+
+
+        String gameCode = generateCode();
+
+        while (!found) {
+
+        }
         String code = generateCode();
+
 
         if (lobbies.containsKey(game)) {
             Map<String, Room> gameRoom = lobbies.getOrDefault(game, defaultRooms);
@@ -47,19 +63,6 @@ public class Lobby {
         return code;
     }
 
-    public String generateCode() {
-        // generate a 4 character/digit room code
-        final var dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        final var code = new StringBuilder();
-        final var length = 4;
-
-        for (var i = 0; i < length; i++) {
-            // append a random character from dictionary to the code string
-            code.append(dict.charAt(rnd.nextInt(dict.length())));
-        }
-
-        return code.toString();
-    }
 
     public boolean addPlayer(String game, String roomCode, Player player) {
         var room = lobbies.get(game).get(roomCode);
@@ -98,3 +101,4 @@ public class Lobby {
         }
     }
 }
+*/

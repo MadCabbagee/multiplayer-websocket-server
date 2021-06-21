@@ -7,41 +7,64 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.*;
 
 public class Room {
 
-    private final String code;
+    private String roomCode;
+    private String gameCode;
     private final List<Player> players;
     private final List<Spectator> spectators;
     private final List<JSONObject> cachedResponses;
     private int playerCount;
+    private Date lastUse;
 
-    public Room(String roomCode) {
-        this.code = roomCode;
+    public Room(String iGameCode, String iRoomCode) {
+        //Set our time.........
+        lastUse = new Date();
+        gameCode = iGameCode;
+        roomCode = iRoomCode;
         players = new ArrayList<>();
         spectators = new ArrayList<>();
         playerCount = 0;
         cachedResponses = new ArrayList<>();
     }
 
+    public void OnRequest(WebSocket conn, JSONObject request) {
+        String reqType = (String) request.get(Keys.Request);
+        switch (reqType.toLowerCase()) {
+
+        }
+    }
+
+    public Date GetLastUse() {
+        return lastUse;
+    }
+
     public void join(Player joiner) {
         players.add(joiner);
-        playerCount++;
+        playerCount = players.size();
     }
 
     public void leave(Player player) {
         players.remove(player);
-        playerCount--;
+        playerCount = players.size();
     }
 
     public void broadcast(String message) {
-        if (players.isEmpty()) return;
+        if (players.isEmpty()) {
+            return;
+        }
         for (Player p : players) {
-            p.getConnection().send(message);
+            try {
+                p.getConnection().send(message);
+            } catch (Exception e) {
+                //Oops
+            }
         }
     }
 
-    public void broadcast(String message, WebSocket... exclusion) {
+    public void broadcastEx(String message, WebSocket... exclusion) {
         if (getViewers().isEmpty()) return;
         for (Player p : players) {
             var connection = p.getConnection();
@@ -54,7 +77,7 @@ public class Room {
     }
 
     public String getCode() {
-        return code;
+        return roomCode;
     }
 
     public List<Player> getPlayers() {
@@ -88,7 +111,7 @@ public class Room {
     public boolean isReady() {
         for (Player p : players) {
             // if any player is not ready, return false. Otherwise they are all ready so it returns true.
-            if (! p.isReady()) {
+            if (!p.isReady()) {
                 return false;
             }
         }

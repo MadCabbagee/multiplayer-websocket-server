@@ -9,10 +9,14 @@ import org.json.simple.parser.ParseException;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+
 
 class Keys {
-
-    private Keys() {}
+    private Keys() {
+    }
 
     public static final String Request = "request";
     public static final String Game = "game";
@@ -23,12 +27,17 @@ class Keys {
     public static final String Success = "success";
     public static final String Payload = "payload";
 }
+
 class Requests {
+    private Requests() {
+    }
 
-    private Requests() {}
-
+    //Handled by Game
     public static final String Create = "create";
     public static final String Join = "join";
+    public static final String Leave = "leave";  //Leaving a room
+
+    //Can sort the rest after I read all this.
     public static final String Start = "start";
     public static final String Starting = "starting";
     public static final String Relay = "relay";
@@ -39,18 +48,22 @@ class Requests {
     public static final String Ready = "ready";
     public static final String UnReady = "unready";
 }
+
 class Games {
 
-    private Games() {}
+    private Games() {
+    }
 
     public static final String DefaultCode = "default";
     public static final String Chaos = "chaos";
     public static final String Pool = "pool";
     public static final String GinRummy = "ginrummy";
 }
+
 class Messages {
 
-    private Messages() {}
+    private Messages() {
+    }
 
     public static final String ConnectionAccepted = "Connection Accepted";
     public static final String RemoteAddress = "\tRemote Address: ";
@@ -63,22 +76,24 @@ class Messages {
     public static final String Quit = "quit";
     public static final String ErrorEncountered = "Error Encountered";
 }
+
 public class MultiplayerWebSocketGameServer extends WebSocketServer {
 
     private static final JSONParser parser = new JSONParser();
     public final boolean debugEnabled;
-    private final Lobby lobby;
+    //No lobby needed
+
+    private Map<String, Game> games = new HashMap<String, Game>();
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address) {
         super(address);
         this.debugEnabled = false;
-        this.lobby = new Lobby();
     }
 
     public MultiplayerWebSocketGameServer(InetSocketAddress address, boolean debug) {
         super(address);
         this.debugEnabled = debug;
-        this.lobby = new Lobby();
+        //this.lobby = new Lobby();
     }
 
     public static void main(String[] args) {
@@ -143,83 +158,19 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
             String reqType = (String) request.get(Keys.Request);
             String game = (String) request.get(Keys.Game);
 
-            switch (reqType.toLowerCase()) {
-                case Requests.Create:
-                    // DEBUGGING
-                    if (debugEnabled) {
-                        System.out.println("Create request received: " + request.toJSONString());
-                    }
+            //This will always have a valid value, even if "ERROR"
+            if (!games.containsKey(game)) {
+                Game insertGame = new Game(game);
+                games.put(game,insertGame);
+                //ames.get(game) = new Game(game);
+            }
+            try {
+                games.get(game).OnRequest(conn, request);
+            } catch (Exception e) {
+                //This is later for fallback when something bad happens.
+            }
 
-                    // Create a new room, give it the creator, send back the roomcode
-                    String code = lobby.createRoom(game);
-                    request.put(Keys.RoomCode, code);
-                    conn.send(request.toJSONString());
-
-                    // DEBUGGING
-                    if (debugEnabled) {
-                        System.out.println("Generated create response: " + request.toJSONString());
-                    }
-                    break;
-
-                case Requests.Join:
-                    String username = (String) request.get(Keys.Username);
-                    var roomCode = (String) request.get(Keys.RoomCode);
-                    int playerCount = lobby.getPlayerCount(game, roomCode) + 1; // account for this connection cause it hasnt been added yet
-                    var joiningPlayer = new Player(conn, username, playerCount);
-                    boolean success = lobby.addPlayer(game, roomCode, joiningPlayer);
-
-                    if (debugEnabled) {
-
-                        if (username == null) {
-                            sendError(conn, "No username in message, send the username next time");
-                            break;
-                        }
-                        if (roomCode == null) {
-                            sendError(conn, "No roomcode in message, send the username next time");
-                            break;
-                        }
-                        if (!success) {
-                            sendError(conn, "Something else is wrong... Add player failed.");
-                            break;
-                        }
-
-                        System.out.println("");
-                    }
-
-                    var joinedRoom = lobby.getRoom(game, roomCode);
-
-                    var response = new JSONObject();
-                    response.put(Keys.Request, Requests.Joined);
-                    response.put(Keys.Game, game);
-                    response.put(Keys.RoomCode, roomCode);
-                    response.put(Keys.Player, playerCount);
-                    response.put(Keys.Success, success);
-
-
-                    // DEBUGGING - print response
-                    if (debugEnabled) {
-                        System.out.println("Generated join response: " + response.toJSONString());
-                    }
-                    if (success) {
-                        conn.setAttachment(joiningPlayer);
-                        // broadcast if not the only player in the room
-                        if (playerCount < 2) {
-                            conn.send(response.toJSONString());
-                        } else {
-                            // broadcast to all that someone joined. (including current connection)
-                            joinedRoom.broadcast(response.toJSONString());
-                            // get cached responses for this room so we can tell current connection about the other players that have already joined
-                            var cachedResponses = (ArrayList<JSONObject>) joinedRoom.getCachedJoinResponses();
-                            // tell current connection about each player that is in the room.
-                            for (JSONObject cached : cachedResponses) {
-                                conn.send(cached.toJSONString());
-                            }
-                        }
-                        // cache the join response
-                        joinedRoom.cacheResponse(response);
-                    }
-                    break;
-
+/*
                 case Requests.Start:
                     // Broadcast to all players that the game is starting.
                     Player player = conn.getAttachment(); // todo: add readyState and id to player class and attach player object
@@ -263,7 +214,7 @@ public class MultiplayerWebSocketGameServer extends WebSocketServer {
                 case Requests.UnReady:
 
                     break;
-            }
+            }*/
         } catch (ParseException e) {
             e.printStackTrace();
         }

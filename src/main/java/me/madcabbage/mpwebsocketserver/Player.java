@@ -7,6 +7,7 @@ public class Player extends AbstractViewer {
     private final int ID;
     private String username;
     private boolean readyState;
+    private int avatarNo = 0;
 
 
     public Player(WebSocket connection, String username, int ID) {
@@ -28,6 +29,14 @@ public class Player extends AbstractViewer {
         return ID;
     }
 
+    public void setAvatarNo(int v) {
+        avatarNo = v;
+    }
+
+    public int getAvatarNo() {
+        return avatarNo;
+    }
+
     public boolean isReady() {
         return readyState;
     }
@@ -36,3 +45,4 @@ public class Player extends AbstractViewer {
         this.readyState = readyState;
     }
 }
+
